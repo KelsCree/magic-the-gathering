@@ -37,37 +37,25 @@ fetch(baseCardURL)
       const username = formData.get('username')
       const email = formData.get('email')
       const password = formData.get('password')
-      fetch(baseUserURL, {
-          method: "POST",
-          headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-              user: {
-                  username: username,
-                  email: email,
-                  password: password
-              }
-          })
-      })
+      const user =  {username, email, password}
+      fetchCall(baseUserURL, "POST", {user})
       .then(res => res.json())
       .then(showNewUser)
   })
 
-//what is happening here...
 function showNewUser(user) {
   const usernameInput = document.querySelector('#username')
   const section = document.querySelector('.new-user')
   console.log(section.childNodes.length)
-  if (user.username[0] == ["Username's length must be between 6 and 14 characters."] || ["${usernameInput.value} cannot be blank."] || [`tjbachorz has already been used.`]) {
-      deletePTags(section)
+  if (user.errors) {
+    removeWarning(section)
       const warning = document.createElement('p')
+      warning.classList.add('warning')
       warning.textContent = user.username
       warning.style.color = "red"
       section.prepend(warning)
   } else {
-      deletePTags(section)
+      removeWarning(section)
       const form = document.querySelector('#new-user-form')
       section.removeChild(form)
       const h1 = document.createElement('h1')
@@ -86,9 +74,23 @@ function deleteCard(event) {
   card.remove()
 }
 
-function deletePTags(section) {
-  if (section.childNodes.length > 3) {
-    const p = document.querySelector('p')
-    p.remove()
+function removeWarning(section) {
+  const warning = section.querySelector('.warning')
+  if warning {
+    warning.remove()
   }
+}
+
+function findError(errors){
+  const errorMessages = Object.values(errors)
+  return errorMessages[0]
+}
+
+function fetchCall(url, method, bodyData) {
+  const headers = {
+    "Accept": "application/json",
+    "Content-type": "application/json"
+  }
+  const body = JSON.stringify(bodyData)
+  return fetch(url, { method, headers, body })
 }
