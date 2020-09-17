@@ -10,6 +10,10 @@ require 'byebug'
 require 'rest-client'
 require 'json'
 
+User.destroy_all
+MagicCard.destroy_all
+Like.destroy_all
+
 def create_seeds
   response = RestClient.get("https://api.magicthegathering.io/v1/cards")
   data = JSON.parse(response)
