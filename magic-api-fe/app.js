@@ -1,5 +1,5 @@
 const baseCardURL = "http://localhost:3000/magic_cards"
-const baseUserURL = "http://localhost:300/users"
+const baseUserURL = "http://localhost:3000/users"
 
 fetch(baseCardURL)
   .then(res => res.json())
@@ -32,46 +32,47 @@ fetch(baseCardURL)
 
   const $newUserForm = document.querySelector('#new-user-form')
   $newUserForm.addEventListener('submit', () => {
-    event.preventDefault()
-    const formData = new FormData($newUserForm)
-    const username = formData.get('username')
-    const email = formData.get('email')
-    const password = formData.get('password')
-    fetch (baseUserURL, {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        user: {
-          username: username,
-          email: email,
-          password: password
-        }
+      event.preventDefault()
+      const formData = new FormData($newUserForm)
+      const username = formData.get('username')
+      const email = formData.get('email')
+      const password = formData.get('password')
+      fetch(baseUserURL, {
+          method: "POST",
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+              user: {
+                  username: username,
+                  email: email,
+                  password: password
+              }
+          })
       })
+      .then(res => res.json())
+      .then(showNewUser)
   })
-  .then(res => res.json())
-  .then(showNewUser)
-})
 
 //what is happening here...
 function showNewUser(user) {
   const usernameInput = document.querySelector('#username')
   const section = document.querySelector('.new-user')
+  console.log(section.childNodes.length)
   if (user.username[0] == ["Username's length must be between 6 and 14 characters."] || ["${usernameInput.value} cannot be blank."] || [`tjbachorz has already been used.`]) {
-    deletePTags(section)
-    const warning = document.createElement('p')
-    warning.textContent = user.username
-    warning.style.color = "red"
-    section.prepend(warning)
+      deletePTags(section)
+      const warning = document.createElement('p')
+      warning.textContent = user.username
+      warning.style.color = "red"
+      section.prepend(warning)
   } else {
-    deletePTags(section)
-    const form = document.querySelector('#new-user-form')
-    section.removeChild(form)
-    const h1 = document.createElement('h1')
-    h1.textContent = `Welcome ${user.username}`
-    section.append(h1)
+      deletePTags(section)
+      const form = document.querySelector('#new-user-form')
+      section.removeChild(form)
+      const h1 = document.createElement('h1')
+      h1.textContent = `Welcome ${user.username}`
+      section.append(h1)
   }
 }
 
